@@ -2,14 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QJsonArray>
+#include <QJsonValue>
 #include <QMainWindow>
+#include <QJsonArray>
 
 class Cridential {
 public:
     QString hostname;
     QString login;
     QString password;
-
 };
 
 QT_BEGIN_NAMESPACE
@@ -25,14 +26,19 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    bool readJSON();
+    bool readJSON(const QByteArray &aes256_key);
+
+public slots:
+    //void on_lineEdit_editingFinished();
+    void filterListWidget(const QString & searchString);
+    int decryptFile(const QByteArray &aes256_key, const QByteArray &encryptedBytes, QByteArray &decryptedBytes);
+    void decryptLogin(int id);
+    void decryptPassword(int id);
+private slots:
+    void on_editPin_returnPressed();
 
 private:
     Ui::MainWindow *ui;
-    QJsonArray m_jsonarray; //структура данных, содержащая учетные записи
-
-private:
-    void filterText(const QString &text);
+    QJsonArray m_jsonarray; //структура данных содержащая учетные записи
 };
-
 #endif // MAINWINDOW_H

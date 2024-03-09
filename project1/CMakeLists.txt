@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(project1 VERSION 0.1 LANGUAGES CXX)
+project(lab1 VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -17,42 +17,55 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        credentialwidget.h credentialwidget.cpp credentialwidget.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(project1
+    qt_add_executable(lab1
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        cridentialwidget.h cridentialwidget.cpp cridentialwidget.ui
 
+        main.cpp
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET project1 APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET lab1 APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(project1 SHARED
+        add_library(lab1 SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(project1
+        add_executable(lab1
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(project1 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(lab1 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+#include(FindOpenSSL)
+# target_link_libraries(lab1 PRIVATE ${CMAKE_DL_LIBS} OpenSSL::SSL OpenSSL::Crypto)
+
+target_include_directories(
+    lab1
+    PRIVATE
+    C:/Qt/Tools/OpenSSLv3/Win_x64/include)
+target_link_libraries(
+    lab1
+    PRIVATE
+    C:/Qt/Tools/OpenSSLv3/Win_x64/lib/libcrypto.lib)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.project1)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.lab1)
 endif()
-set_target_properties(project1 PROPERTIES
+set_target_properties(lab1 PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -61,18 +74,17 @@ set_target_properties(project1 PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS project1
+install(TARGETS lab1
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(project1)
+    qt_finalize_executable(lab1)
 endif()
 
-
-configure_file (
+configure_file(
     cridentials.json
     cridentials.json
 )
