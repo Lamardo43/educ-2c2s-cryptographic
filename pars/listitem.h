@@ -23,11 +23,11 @@ public:
 private slots:
     void on_copyLoginButton_clicked();
 
-signals:
-    void enterPinSignal();
+    void on_copyPasswordButton_clicked();
 
-public slots:
-    void on_pinEntered();
+signals:
+    void enterPinSignal(QString toEncryptLogOrPass);
+
 
 private:
     Ui::ListItem *ui;

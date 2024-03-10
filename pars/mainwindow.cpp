@@ -14,6 +14,7 @@
 #include <QLineEdit>
 #include <QBuffer>
 #include <QCryptographicHash>
+#include <QClipboard>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,24 +40,18 @@ bool MainWindow::readJSON(unsigned char *key)
         return false;
 
     QByteArray hexEncryptedBytes = jsonFile.readAll();
-    // qDebug() << "***hexEncryptedBytes" << hexEncryptedBytes;
+
     QByteArray encryptedBytes = QByteArray::fromHex(hexEncryptedBytes);
-    // qDebug() << "***encryptedBytes" << encryptedBytes;
+
     QByteArray decryptedBytes;
-//    qDebug() << "***decryptedBytes" << decryptedBytes;
+
     int ret_code = MainWindow::decryptQByteArray(encryptedBytes, decryptedBytes, key);
 
-//    qDebug() << "***decryptedBytes " << decryptedBytes;
-
-
     QJsonDocument jsonDoc = QJsonDocument::fromJson(decryptedBytes);
-//    qDebug() << "***jsonDoc " << jsonDoc;
 
     QJsonObject jsonObj = jsonDoc.object();
-//    qDebug() << "***jsonObj " << jsonObj;
 
     jsonArr = jsonObj["cridentials"].toArray();
-//    qDebug() << "***jsonArr " << jsonArr;
 
     jsonFile.close();
 
@@ -78,7 +73,7 @@ void MainWindow::filterListWidget(const QString &searchStrings)
             ListItem *itemWidget = new ListItem(jsonItem["site"].toString(), jsonItem["login"].toString(), jsonItem["password"].toString());
 
             QObject::connect(itemWidget, &ListItem::enterPinSignal, this, &MainWindow::on_enterPinSignal);
-            QObject::connect(this, &MainWindow::pinEntered, itemWidget,  &ListItem::on_pinEntered);
+            // QObject::connect(this, &MainWindow::pinEntered, itemWidget,  &ListItem::on_pinEntered);
 
             ui->listWidget->addItem(newItem);
             ui->listWidget->setItemWidget(newItem, itemWidget);
@@ -174,8 +169,9 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
 //    ui->stackedWidget->setCurrentIndex(0);
 //}
 
-void MainWindow::on_enterPinSignal() {
+void MainWindow::on_enterPinSignal(QString toEncryptLogOrPass) {
     ui->stackedWidget->setCurrentIndex(1);
+    this->toEncryptLogOrPass = toEncryptLogOrPass;
 }
 
 
@@ -187,6 +183,8 @@ void MainWindow::on_lineEdit_2_returnPressed()
     memcpy(hash_key, hash.data(), 32);
 
     qDebug() << "***isAuthenticated -> " << isAuthenticated;
+
+
 
     if (!isAuthenticated){
 
@@ -203,7 +201,14 @@ void MainWindow::on_lineEdit_2_returnPressed()
             ui->lineEdit_2->setText("");
             ui->stackedWidget->setCurrentIndex(0);
 
-            emit pinEntered();
+            QByteArray decryptedBytes;
+
+            int ret_code = MainWindow::decryptQByteArray(QByteArray::fromHex(toEncryptLogOrPass.toLatin1()),
+                                                         decryptedBytes, hash_key);
+
+
+            QClipboard *clipboard = QApplication::clipboard();
+            clipboard->setText(decryptedBytes);
         }
     }
 

@@ -24,12 +24,11 @@ public:
 private:
     int isAuthenticated = 0;
     Ui::MainWindow *ui;
+    QString toEncryptLogOrPass;
 
 public slots:
-    void on_enterPinSignal();
+    void on_enterPinSignal(QString toEncryptLogOrPass);
 
-signals:
-    void pinEntered();
 
 private slots:
     void on_lineEdit_2_returnPressed();

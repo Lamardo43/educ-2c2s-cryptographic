@@ -44,33 +44,12 @@ void ListItem::on_copyLoginButton_clicked()
 {
     // qDebug() << log_encr;
 
-    emit enterPinSignal();
+    emit enterPinSignal(log_encr);
 }
 
-void ListItem::on_pinEntered() {
 
-    QString pin = "6060";
-
-    QByteArray hash = QCryptographicHash::hash(pin.toUtf8(), QCryptographicHash::Sha256);
-
-    qDebug() << "***Hash -> " << hash;
-
-    QCryptographicHash::hash(pin.toUtf8(), QCryptographicHash::Sha256);
-
-    unsigned char hash_key[32] = {0};
-    memcpy(hash_key, hash.data(), 32);
-    qDebug() << "***hash_key -> " << hash_key;
-
-
-    // qDebug() << "***hexEncryptedBytes" << hexEncryptedBytes;
-    QByteArray encryptedBytes = QByteArray::fromHex(log_encr.toLatin1());
-    // qDebug() << "***encryptedBytes" << encryptedBytes;
-    QByteArray decryptedBytes;
-    //
-    int ret_code = MainWindow::decryptQByteArray(encryptedBytes, decryptedBytes, hash_key);
-
-
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(decryptedBytes);
+void ListItem::on_copyPasswordButton_clicked()
+{
+    emit enterPinSignal(pass_encr);
 }
 
