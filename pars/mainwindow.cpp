@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     QObject::connect(ui->lineEdit, &QLineEdit::textEdited, this, &MainWindow::filterListWidget);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -74,6 +76,9 @@ void MainWindow::filterListWidget(const QString &searchStrings)
         {
             QListWidgetItem *newItem = new QListWidgetItem();
             ListItem *itemWidget = new ListItem(jsonItem["site"].toString(), jsonItem["login"].toString(), jsonItem["password"].toString());
+
+            QObject::connect(itemWidget, &ListItem::enterPinSignal, this, &MainWindow::on_enterPinSignal);
+            QObject::connect(this, &MainWindow::pinEntered, itemWidget,  &ListItem::on_pinEntered);
 
             ui->listWidget->addItem(newItem);
             ui->listWidget->setItemWidget(newItem, itemWidget);
@@ -169,29 +174,39 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
 //    ui->stackedWidget->setCurrentIndex(0);
 //}
 
+void MainWindow::on_enterPinSignal() {
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
 
 void MainWindow::on_lineEdit_2_returnPressed()
 {
-    qDebug() << "***Password -> " <<  ui->lineEdit_2->text().toUtf8();
-
     QByteArray hash = QCryptographicHash::hash(ui->lineEdit_2->text().toUtf8(), QCryptographicHash::Sha256);
-
-    qDebug() << "***Hash -> " << hash;
-
-    QString pin = "6060";
-    QCryptographicHash::hash(pin.toUtf8(), QCryptographicHash::Sha256);
 
     unsigned char hash_key[32] = {0};
     memcpy(hash_key, hash.data(), 32);
-    qDebug() << "***hash_key -> " << hash_key;
 
-    qDebug() << "***readJSON -> " << readJSON(hash_key);
+    qDebug() << "***isAuthenticated -> " << isAuthenticated;
 
-    if (readJSON(hash_key) == 1)
-    {
-        ui->stackedWidget->setCurrentIndex(0);
-        filterListWidget("");
+    if (!isAuthenticated){
+
+        isAuthenticated = readJSON(hash_key);
+
+        if (isAuthenticated)
+        {
+            ui->lineEdit_2->setText("");
+            ui->stackedWidget->setCurrentIndex(0);
+            filterListWidget("");
+        }
+    } else {
+        if (readJSON(hash_key)) {
+            ui->lineEdit_2->setText("");
+            ui->stackedWidget->setCurrentIndex(0);
+
+            emit pinEntered();
+        }
     }
+
 
 
 }

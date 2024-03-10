@@ -22,10 +22,17 @@ public:
     ~MainWindow();
 
 private:
+    int isAuthenticated = 0;
     Ui::MainWindow *ui;
 
-private slots:
+public slots:
+    void on_enterPinSignal();
 
+signals:
+    void pinEntered();
+
+private slots:
     void on_lineEdit_2_returnPressed();
+
 };
 #endif // MAINWINDOW_H

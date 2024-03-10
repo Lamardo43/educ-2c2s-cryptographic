@@ -23,6 +23,12 @@ public:
 private slots:
     void on_copyLoginButton_clicked();
 
+signals:
+    void enterPinSignal();
+
+public slots:
+    void on_pinEntered();
+
 private:
     Ui::ListItem *ui;
     QString pass_encr;

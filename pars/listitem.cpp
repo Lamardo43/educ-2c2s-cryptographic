@@ -2,6 +2,7 @@
 #include "ui_listitem.h"
 #include "mainwindow.h"
 #include <QCryptographicHash>
+#include <QClipboard>
 
 ListItem::ListItem(QString site, QString login_encrypted, QString password_encrypted, QWidget *parent) :
     QWidget(parent),
@@ -41,9 +42,12 @@ ListItem::~ListItem()
 
 void ListItem::on_copyLoginButton_clicked()
 {
-    qDebug() << log_encr;
+    // qDebug() << log_encr;
 
+    emit enterPinSignal();
+}
 
+void ListItem::on_pinEntered() {
 
     QString pin = "6060";
 
@@ -65,7 +69,8 @@ void ListItem::on_copyLoginButton_clicked()
     //
     int ret_code = MainWindow::decryptQByteArray(encryptedBytes, decryptedBytes, hash_key);
 
-    qDebug() << "***decryptedBytes" << decryptedBytes;
 
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(decryptedBytes);
 }
 
