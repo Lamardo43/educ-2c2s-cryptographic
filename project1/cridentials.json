@@ -1,7 +1,0 @@
-{
-    "cridentials": [
-        {"site": "site1.com", "login": "login1", "password": "password1"},
-        {"site": "site2.com", "login": "login2", "password": "password2"},
-        {"site": "site3.com", "login": "login3", "password": "password3"}
-    ]
-}

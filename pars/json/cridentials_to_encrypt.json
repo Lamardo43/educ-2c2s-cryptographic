@@ -1,0 +1,13 @@
+{
+    "cridentials": [
+        {"site": "google.com", "login": "0e1216d72fb4194cd4cb17afe1b1ddc7", "password": "0e1216d72fb4194cd4cb17afe1b1ddc7"},
+        {"site": "yandex.ru", "login": "44d6b14e304e7443a17ecfed8412a30f", "password": "44d6b14e304e7443a17ecfed8412a30f"},
+        {"site": "youtube.com", "login": "f84d481bfeb0e8f0df90707e46ae5aa3", "password": "f84d481bfeb0e8f0df90707e46ae5aa3"},
+        {"site": "mail.ru", "login": "74be7982849929fbd3736de3a271a98f", "password": "74be7982849929fbd3736de3a271a98f"},
+        {"site": "vk.ru", "login": "3aeb8765bdb1e320ffaaa766158260e3", "password": "3aeb8765bdb1e320ffaaa766158260e3"},
+        {"site": "gmail.com", "login": "dc7f8ea5b6f87144504fe0017ee28e55", "password": "dc7f8ea5b6f87144504fe0017ee28e55"},
+        {"site": "ok.ru", "login": "e137b7bc1a1675a325d7f416ebcafa4f", "password": "e137b7bc1a1675a325d7f416ebcafa4f"},
+        {"site": "microsoft.com", "login": "a0d414e6019bbcb0610baa06270b7008", "password": "a0d414e6019bbcb0610baa06270b7008"},
+        {"site": "github.com", "login": "e4544b3ef9c2e90053b107f4dd1b137e", "password": "e4544b3ef9c2e90053b107f4dd1b137e"}
+    ]
+}

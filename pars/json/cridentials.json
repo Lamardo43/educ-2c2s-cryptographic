@@ -1,0 +1,13 @@
+{
+    "cridentials": [
+        {"site": "google.com", "login": "google", "password": "google"},
+        {"site": "yandex.ru", "login": "yandex", "password": "yandex"},
+        {"site": "youtube.com", "login": "youtube", "password": "youtube"},
+        {"site": "mail.ru", "login": "mail", "password": "mail"},
+        {"site": "vk.ru", "login": "vk", "password": "vk"},
+        {"site": "gmail.com", "login": "gmail", "password": "gmail"},
+        {"site": "ok.ru", "login": "ok", "password": "ok"},
+        {"site": "microsoft.com", "login": "microsoft", "password": "microsoft"},
+        {"site": "github.com", "login": "github", "password": "github"}
+    ]
+}
