@@ -47,11 +47,16 @@ bool MainWindow::readJSON(unsigned char *key)
 
     int ret_code = MainWindow::decryptQByteArray(encryptedBytes, decryptedBytes, key);
 
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(decryptedBytes);
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(decryptedBytes, &error);
+
+    qDebug() << error.errorString();
+
+    qDebug() << decryptedBytes;
 
     QJsonObject jsonObj = jsonDoc.object();
 
-    jsonArr = jsonObj["cridentials"].toArray();
+    this->jsonArr = jsonObj["cridentials"].toArray();
 
     jsonFile.close();
 
