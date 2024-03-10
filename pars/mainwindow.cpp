@@ -37,12 +37,12 @@ bool MainWindow::readJSON(unsigned char *key)
         return false;
 
     QByteArray hexEncryptedBytes = jsonFile.readAll();
-//    qDebug() << "***hexEncryptedBytes" << hexEncryptedBytes;
+    // qDebug() << "***hexEncryptedBytes" << hexEncryptedBytes;
     QByteArray encryptedBytes = QByteArray::fromHex(hexEncryptedBytes);
-//    qDebug() << "***encryptedBytes" << encryptedBytes;
+    // qDebug() << "***encryptedBytes" << encryptedBytes;
     QByteArray decryptedBytes;
 //    qDebug() << "***decryptedBytes" << decryptedBytes;
-    int ret_code = decryptQByteArray(encryptedBytes, decryptedBytes, key);
+    int ret_code = MainWindow::decryptQByteArray(encryptedBytes, decryptedBytes, key);
 
 //    qDebug() << "***decryptedBytes " << decryptedBytes;
 
@@ -57,7 +57,8 @@ bool MainWindow::readJSON(unsigned char *key)
 //    qDebug() << "***jsonArr " << jsonArr;
 
     jsonFile.close();
-    return true;
+
+    return !ret_code;
 }
 
 void MainWindow::filterListWidget(const QString &searchStrings)
@@ -90,7 +91,7 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
 //    qDebug() << "***key_ba " << key_ba;
 //    unsigned char key[32] = {0};
 //    memcpy(key, key_ba.data(), 32);
-    qDebug() << "key " << key;
+    // qDebug() << "key " << key;
 
     QByteArray iv_hex("00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f");
     QByteArray iv_ba = QByteArray::fromHex(iv_hex);
@@ -124,7 +125,7 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
     encr_len = encrypted_stream.readRawData(reinterpret_cast<char*>(encrypted_buf), BUF_LEN);
     while(encr_len > 0){
 //        encr_len = encrypted_stream.readRawData(reinterpret_cast<char*>(encrypted_buf), BUF_LEN);
-        qDebug() << "***encr_len " << encr_len;
+        // qDebug() << "***encr_len " << encr_len;
         if (!EVP_DecryptUpdate(ctx, decrypted_buf, &decr_len, encrypted_buf, encr_len)) {
             /* Error */
             qDebug() << "Error";
@@ -134,7 +135,7 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
 
         decryptedBuffer.write(reinterpret_cast<char*>(decrypted_buf), decr_len);
         encr_len = encrypted_stream.readRawData(reinterpret_cast<char*>(encrypted_buf), BUF_LEN);
-        qDebug() << "***EVP_EncryptUpdate " << reinterpret_cast<char*>(decrypted_buf);
+        // qDebug() << "***EVP_EncryptUpdate " << reinterpret_cast<char*>(decrypted_buf);
     }
 
     int tmplen;
@@ -143,7 +144,7 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
           EVP_CIPHER_CTX_free(ctx);
           return -1;
       }
-      qDebug() << "***EVP_DecryptFinal_ex " << reinterpret_cast<char*>(decrypted_buf);
+      // qDebug() << "***EVP_DecryptFinal_ex " << reinterpret_cast<char*>(decrypted_buf);
       decryptedBuffer.write(reinterpret_cast<char*>(decrypted_buf), tmplen);
       EVP_CIPHER_CTX_free(ctx);
 
@@ -177,6 +178,8 @@ void MainWindow::on_lineEdit_2_returnPressed()
 
     qDebug() << "***Hash -> " << hash;
 
+    QString pin = "6060";
+    QCryptographicHash::hash(pin.toUtf8(), QCryptographicHash::Sha256);
 
     unsigned char hash_key[32] = {0};
     memcpy(hash_key, hash.data(), 32);

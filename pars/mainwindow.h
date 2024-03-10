@@ -18,7 +18,7 @@ public:
     bool readJSON(unsigned char *key);
     QJsonArray jsonArr;
     void filterListWidget(const QString &searchStrings);
-    int decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key);
+    static int decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key);
     ~MainWindow();
 
 private:

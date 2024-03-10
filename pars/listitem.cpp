@@ -1,6 +1,7 @@
 #include "listitem.h"
 #include "ui_listitem.h"
 #include "mainwindow.h"
+#include <QCryptographicHash>
 
 ListItem::ListItem(QString site, QString login_encrypted, QString password_encrypted, QWidget *parent) :
     QWidget(parent),
@@ -27,13 +28,44 @@ ListItem::~ListItem()
     delete ui;
 }
 
-void ListItem::on_lineEdit_2_selectionChanged()
-{
-    ui->loginLineEdit->setText("encrypted");
-}
+// void ListItem::on_lineEdit_2_selectionChanged()
+// {
+//     ui->loginLineEdit->setText("encrypted");
+// }
 
-void ListItem::on_lineEdit_2_editingFinished()
+// void ListItem::on_lineEdit_2_editingFinished()
+// {
+//     ui->loginLineEdit->setText("******");
+// }
+
+
+void ListItem::on_copyLoginButton_clicked()
 {
-    ui->loginLineEdit->setText("******");
+    qDebug() << log_encr;
+
+
+
+    QString pin = "6060";
+
+    QByteArray hash = QCryptographicHash::hash(pin.toUtf8(), QCryptographicHash::Sha256);
+
+    qDebug() << "***Hash -> " << hash;
+
+    QCryptographicHash::hash(pin.toUtf8(), QCryptographicHash::Sha256);
+
+    unsigned char hash_key[32] = {0};
+    memcpy(hash_key, hash.data(), 32);
+    qDebug() << "***hash_key -> " << hash_key;
+
+
+    // qDebug() << "***hexEncryptedBytes" << hexEncryptedBytes;
+    QByteArray encryptedBytes = QByteArray::fromHex(log_encr.toLatin1());
+    // qDebug() << "***encryptedBytes" << encryptedBytes;
+    QByteArray decryptedBytes;
+    //
+    int ret_code = MainWindow::decryptQByteArray(encryptedBytes, decryptedBytes, hash_key);
+
+    qDebug() << "***decryptedBytes" << decryptedBytes;
+
 }
 
