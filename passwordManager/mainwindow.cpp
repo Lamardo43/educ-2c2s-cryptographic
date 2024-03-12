@@ -35,7 +35,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::readJSON(unsigned char *key)
 {
-    QFile jsonFile("D:/Education/Education4/enc/pars/json/cridentials_encrypted.json");
+    QFile jsonFile(":/res/json/cridentials_encrypted.json");
     if(!jsonFile.open(QIODevice::ReadOnly))
         return false;
 
@@ -168,7 +168,6 @@ void MainWindow::on_lineEdit_2_returnPressed()
 
         if (isAuthenticated)
         {
-            ui->lineEdit_2->setText("");
             ui->stackedWidget->setCurrentIndex(0);
             filterListWidget("");
         }
@@ -188,7 +187,13 @@ void MainWindow::on_lineEdit_2_returnPressed()
         }
     }
 
+    ui->lineEdit_2->setText("");
+
+}
 
 
+void MainWindow::on_okButton_clicked()
+{
+    on_lineEdit_2_returnPressed();
 }
 

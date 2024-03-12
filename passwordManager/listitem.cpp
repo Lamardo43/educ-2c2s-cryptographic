@@ -17,7 +17,7 @@ ListItem::ListItem(QString site, QString login_encrypted, QString password_encry
     ui->loginLineEdit->setText("******");
     ui->passwordLineEdit->setText("******");
 
-    QPixmap pix(":/img/img/keys.png");
+    QPixmap pix(":/res/img/keys.png");
     int w = ui->iconKeys->width();
     int h = ui->iconKeys->height();
 

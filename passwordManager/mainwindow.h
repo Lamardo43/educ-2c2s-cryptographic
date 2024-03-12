@@ -33,5 +33,6 @@ public slots:
 private slots:
     void on_lineEdit_2_returnPressed();
 
+    void on_okButton_clicked();
 };
 #endif // MAINWINDOW_H
