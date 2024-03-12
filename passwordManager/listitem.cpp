@@ -14,8 +14,8 @@ ListItem::ListItem(QString site, QString login_encrypted, QString password_encry
     ui->setupUi(this);
 
     ui->siteName->setText(site);
-    ui->loginLineEdit->setText("******");
-    ui->passwordLineEdit->setText("******");
+    ui->copyLoginButton->setText("******");
+    ui->copyPasswordButton->setText("******");
 
     QPixmap pix(":/res/img/keys.png");
     int w = ui->iconKeys->width();

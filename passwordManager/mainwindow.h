@@ -17,7 +17,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     bool readJSON(unsigned char *key);
     QJsonArray jsonArr;
-    void filterListWidget(const QString &searchStrings);
+    void filterListItems(const QString &searchStrings);
     static int decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key);
     ~MainWindow();
 
@@ -25,6 +25,7 @@ private:
     int isAuthenticated = 0;
     Ui::MainWindow *ui;
     QString toEncryptLogOrPass;
+    void showIncorrectPasswordLabel();
 
 public slots:
     void on_enterPinSignal(QString toEncryptLogOrPass);
