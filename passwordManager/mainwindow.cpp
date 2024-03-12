@@ -39,7 +39,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::readJSON(unsigned char *key)
 {
-    QFile jsonFile("D:/Education/Education4/enc/passwordManager/json/json1.json");
+    QFile jsonFile(":/res/json/cridentials_encrypted.json");
 
     if(!jsonFile.open(QIODevice::ReadOnly))
         return false;
