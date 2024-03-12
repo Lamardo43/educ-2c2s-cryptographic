@@ -29,21 +29,10 @@ ListItem::~ListItem()
     delete ui;
 }
 
-// void ListItem::on_lineEdit_2_selectionChanged()
-// {
-//     ui->loginLineEdit->setText("encrypted");
-// }
-
-// void ListItem::on_lineEdit_2_editingFinished()
-// {
-//     ui->loginLineEdit->setText("******");
-// }
 
 
 void ListItem::on_copyLoginButton_clicked()
 {
-    // qDebug() << log_encr;
-
     emit enterPinSignal(log_encr);
 }
 

@@ -78,7 +78,6 @@ void MainWindow::filterListWidget(const QString &searchStrings)
             ListItem *itemWidget = new ListItem(jsonItem["site"].toString(), jsonItem["login"].toString(), jsonItem["password"].toString());
 
             QObject::connect(itemWidget, &ListItem::enterPinSignal, this, &MainWindow::on_enterPinSignal);
-            // QObject::connect(this, &MainWindow::pinEntered, itemWidget,  &ListItem::on_pinEntered);
 
             ui->listWidget->addItem(newItem);
             ui->listWidget->setItemWidget(newItem, itemWidget);
@@ -91,19 +90,12 @@ void MainWindow::filterListWidget(const QString &searchStrings)
 int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key)
 {
 
-//    QByteArray key_hex("060e33205a731400c2eb92bc12cf921a4e44cf1851d216f144337dd6ec5350a7");
-//    QByteArray key_ba = QByteArray::fromHex(key_hex);
-//    qDebug() << "***key_ba " << key_ba;
-//    unsigned char key[32] = {0};
-//    memcpy(key, key_ba.data(), 32);
-    // qDebug() << "key " << key;
 
     QByteArray iv_hex("00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f");
     QByteArray iv_ba = QByteArray::fromHex(iv_hex);
-//    qDebug() << "***iv_ba " << iv_ba;
+
     unsigned char iv[16] = {0};
     memcpy(iv, iv_ba.data(), 16);
-//    qDebug() << "iv " << iv;
 
     EVP_CIPHER_CTX *ctx;
     ctx = EVP_CIPHER_CTX_new();
@@ -124,13 +116,11 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
     decryptedBytes.clear();
     QBuffer decryptedBuffer(&decryptedBytes);
     decryptedBuffer.open(QIODevice::ReadWrite);
-//    QDataStream decrypted_stream(&buffer);
 
 
     encr_len = encrypted_stream.readRawData(reinterpret_cast<char*>(encrypted_buf), BUF_LEN);
     while(encr_len > 0){
-//        encr_len = encrypted_stream.readRawData(reinterpret_cast<char*>(encrypted_buf), BUF_LEN);
-        // qDebug() << "***encr_len " << encr_len;
+
         if (!EVP_DecryptUpdate(ctx, decrypted_buf, &decr_len, encrypted_buf, encr_len)) {
             /* Error */
             qDebug() << "Error";
@@ -140,7 +130,6 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
 
         decryptedBuffer.write(reinterpret_cast<char*>(decrypted_buf), decr_len);
         encr_len = encrypted_stream.readRawData(reinterpret_cast<char*>(encrypted_buf), BUF_LEN);
-        // qDebug() << "***EVP_EncryptUpdate " << reinterpret_cast<char*>(decrypted_buf);
     }
 
     int tmplen;
@@ -157,23 +146,6 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
     return 0;
 }
 
-//IV: AAB1C2D3A4B5C6B7A8A9BA0B0C0D0E0F
-
-//password = 6060
-
-//key = sha256(password) = 060e33205a731400c2eb92bc12cf921a4e44cf1851d216f144337dd6ec5350a7
-
-//void MainWindow::on_lineEdit_2_returnPressed()
-//{
-//    ui->stackedWidget->setCurrentIndex(1);
-//}
-
-
-//void MainWindow::on_pushButton_clicked()
-//{
-//    ui->stackedWidget->setCurrentIndex(0);
-//}
-
 void MainWindow::on_enterPinSignal(QString toEncryptLogOrPass) {
     ui->stackedWidget->setCurrentIndex(1);
     this->toEncryptLogOrPass = toEncryptLogOrPass;
@@ -188,7 +160,6 @@ void MainWindow::on_lineEdit_2_returnPressed()
     memcpy(hash_key, hash.data(), 32);
 
     qDebug() << "***isAuthenticated -> " << isAuthenticated;
-
 
 
     if (!isAuthenticated){
