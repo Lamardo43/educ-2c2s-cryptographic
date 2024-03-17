@@ -192,7 +192,7 @@ void MainWindow::on_lineEdit_2_returnPressed()
             QClipboard *clipboard = QApplication::clipboard();
             clipboard->setText(decryptedBytes);
         } else {
-            ui->incorrectPasswordLabel->setVisible(true);
+            showIncorrectPasswordLabel();
         }
     }
 
