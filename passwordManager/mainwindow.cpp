@@ -41,6 +41,8 @@ bool MainWindow::readJSON(unsigned char *key)
 {
     QFile jsonFile(":/res/json/cridentials_encrypted.json");
 
+    qDebug() << key;
+
     if(!jsonFile.open(QIODevice::ReadOnly))
         return false;
 
