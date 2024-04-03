@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-projectlab1 VERSION 0.1 LANGUAGES CXX)
+project(lab1 VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -30,41 +30,41 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executablelab1
+    qt_add_executable(lab1
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET passwordManager APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET lab1 APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_librarylab1 SHARED
+        add_library(lab1 SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executablelab1
+        add_executable(lab1
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_librarieslab1 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(lab1 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 include(FindOpenSSL) # средствами CMake автоматически найти установленную OpenSSL на данной машине, если это возможно
 target_include_directories(
-    passwordManager
+    lab1
     PRIVATE
     C:/QT/Tools/OpenSSLv3/Win_x64/include)
 target_link_libraries(
-    passwordManager # к какой цели подключать
+    lab1 # к какой цели подключать
     PRIVATE # в каком режиме подключать
     C:/Qt/Tools/OpenSSLv3/Win_x64/lib/libcrypto.lib) # что именно подключать
 
-set_target_propertieslab1 PROPERTIES
+set_target_properties(lab1 PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -73,5 +73,5 @@ set_target_propertieslab1 PROPERTIES
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executablelab1)
+    qt_finalize_executable(lab1)
 endif()
