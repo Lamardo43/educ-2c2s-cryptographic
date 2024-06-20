@@ -14,3 +14,7 @@
 - Пользователь выбирает карты по одной. При выборе карта открывается, расшифровывая число, и это число добавляется к общему счету.
 - После открытия трех карт их сумма выводится во всплывающей панели, а игровое поле сбрасывается для новой игры.
 
+# Скриншоты
+![Вход](https://github.com/Lamardo43/educ-2c2s-cryptographic/blob/master/imgs/Screenshot_1.png)
+![Неверный пароль](https://github.com/Lamardo43/educ-2c2s-cryptographic/blob/master/imgs/Screenshot_2.png)
+![Основное окно](https://github.com/Lamardo43/educ-2c2s-cryptographic/blob/master/imgs/Screenshot_3.png)
