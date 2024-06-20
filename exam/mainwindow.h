@@ -26,9 +26,11 @@ private:
 
     Ui::MainWindow *ui;
     int correctPinCode = 1234;
-    QVector<int> cardValues;
+    QVector<QByteArray> cardValues;
     int currentScore;
     int cardsRevealed;
+    int decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key);
+    int encryptQByteArray(const QByteArray &plainBytes, QByteArray &encryptedBytes, unsigned char *key);
 };
 
 #endif // MAINWINDOW_H
