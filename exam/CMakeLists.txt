@@ -19,14 +19,6 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        json/cridentials.json
-        json/cridentials_encrypted.json
-        json/cridentials_to_encrypt.json
-
-
-
-        resource.qrc
-
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

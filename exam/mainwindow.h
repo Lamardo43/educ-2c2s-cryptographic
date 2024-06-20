@@ -2,13 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QStackedWidget>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QLabel>
-#include <QGridLayout>
-#include <QMessageBox>
 #include <QVector>
+#include "ui_mainwindow.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -23,21 +22,9 @@ private slots:
     void onResetButtonClicked();
 
 private:
-    void setupLoginPage();
-    void setupGamePage();
     void resetGame();
 
-    QStackedWidget *stackedWidget;
-    QWidget *loginPage;
-    QWidget *gamePage;
-
-    QLineEdit *pinCodeEdit;
-    QPushButton *loginButton;
-
-    QVector<QPushButton*> cards;
-    QPushButton *resetButton;
-    QLabel *scoreLabel;
-
+    Ui::MainWindow *ui;
     int correctPinCode = 1234;
     QVector<int> cardValues;
     int currentScore;

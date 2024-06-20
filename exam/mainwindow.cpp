@@ -1,95 +1,61 @@
 #include "mainwindow.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QRandomGenerator>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), currentScore(0), cardsRevealed(0) {
-    stackedWidget = new QStackedWidget(this);
-    setCentralWidget(stackedWidget);
+    : QMainWindow(parent), ui(new Ui::MainWindow), currentScore(0), cardsRevealed(0) {
+    ui->setupUi(this);
 
-    setupLoginPage();
-    setupGamePage();
+    ui->stackedWidget->setCurrentWidget(ui->loginPage);
 
-    stackedWidget->addWidget(loginPage);
-    stackedWidget->addWidget(gamePage);
+    connect(ui->loginButton, &QPushButton::clicked, this, &MainWindow::onLoginButtonClicked);
+    connect(ui->resetButton, &QPushButton::clicked, this, &MainWindow::onResetButtonClicked);
 
-    stackedWidget->setCurrentWidget(loginPage);
+    for (int i = 0; i < 9; ++i) {
+        QPushButton *cardButton = findChild<QPushButton*>(QString("card%1").arg(i + 1));
+        if (cardButton) {
+            connect(cardButton, &QPushButton::clicked, this, &MainWindow::onCardClicked);
+        }
+    }
+
+    resetGame();
 }
 
 MainWindow::~MainWindow() {
-}
-
-void MainWindow::setupLoginPage() {
-    loginPage = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(loginPage);
-
-    pinCodeEdit = new QLineEdit(this);
-    pinCodeEdit->setEchoMode(QLineEdit::Password);
-    layout->addWidget(pinCodeEdit);
-
-    loginButton = new QPushButton("Вход", this);
-    connect(loginButton, &QPushButton::clicked, this, &MainWindow::onLoginButtonClicked);
-    layout->addWidget(loginButton);
-
-    loginPage->setLayout(layout);
-}
-
-void MainWindow::setupGamePage() {
-    gamePage = new QWidget(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout(gamePage);
-
-    QHBoxLayout *topLayout = new QHBoxLayout();
-    scoreLabel = new QLabel("Очки: 0", this);
-    topLayout->addWidget(scoreLabel);
-
-    resetButton = new QPushButton("Сброс", this);
-    connect(resetButton, &QPushButton::clicked, this, &MainWindow::onResetButtonClicked);
-    topLayout->addWidget(resetButton);
-
-    mainLayout->addLayout(topLayout);
-
-    QGridLayout *gridLayout = new QGridLayout();
-    for (int i = 0; i < 9; ++i) {
-        QPushButton *cardButton = new QPushButton("Карта", this);
-        cardButton->setFixedSize(100, 100);
-        connect(cardButton, &QPushButton::clicked, this, &MainWindow::onCardClicked);
-        cards.append(cardButton);
-        gridLayout->addWidget(cardButton, i / 3, i % 3);
-    }
-    mainLayout->addLayout(gridLayout);
-
-    gamePage->setLayout(mainLayout);
-    resetGame();
+    delete ui;
 }
 
 void MainWindow::resetGame() {
     cardValues.clear();
     currentScore = 0;
     cardsRevealed = 0;
-    scoreLabel->setText("Очки: 0");
+    ui->scoreLabel->setText("Очки: 0");
 
     QRandomGenerator *random = QRandomGenerator::global();
     for (int i = 0; i < 9; ++i) {
         int value = random->bounded(-50, 51);
         cardValues.append(value);
-        cards[i]->setText("Карта");
-        cards[i]->setEnabled(true);
+        QPushButton *cardButton = findChild<QPushButton*>(QString("card%1").arg(i + 1));
+        if (cardButton) {
+            cardButton->setText("");
+            cardButton->setEnabled(true);
+        }
     }
 }
 
 void MainWindow::onLoginButtonClicked() {
-    if (pinCodeEdit->text().toInt() == correctPinCode) {
-        stackedWidget->setCurrentWidget(gamePage);
+    if (ui->pinCodeEdit->text().toInt() == correctPinCode) {
+        ui->stackedWidget->setCurrentWidget(ui->gamePage);
     } else {
         QMessageBox::warning(this, "Ошибка", "Неверный пин-код");
-        pinCodeEdit->clear();
     }
 }
 
 void MainWindow::onCardClicked() {
     QPushButton *clickedButton = qobject_cast<QPushButton*>(sender());
-    int index = cards.indexOf(clickedButton);
+    if (!clickedButton) return;
+
+    int index = clickedButton->objectName().mid(4).toInt() - 1;
 
     if (index != -1 && cardsRevealed < 3) {
         int value = cardValues[index];
@@ -98,7 +64,7 @@ void MainWindow::onCardClicked() {
         currentScore += value;
         ++cardsRevealed;
 
-        scoreLabel->setText(QString("Очки: %1").arg(currentScore));
+        ui->scoreLabel->setText(QString("Очки: %1").arg(currentScore));
 
         if (cardsRevealed == 3) {
             QMessageBox::information(this, "Результат", QString("Вы набрали %1 очков").arg(currentScore));
