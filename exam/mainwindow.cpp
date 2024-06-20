@@ -3,6 +3,10 @@
 #include <QMessageBox>
 #include <QBuffer>
 #include <QCryptographicHash>
+#include <QFile>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include <openssl/evp.h>
 
@@ -23,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     resetGame();
+    loadGame();
 }
 
 MainWindow::~MainWindow() {
@@ -31,6 +36,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::resetGame() {
     cardValues.clear();
+
     currentScore = 0;
     cardsRevealed = 0;
     ui->scoreLabel->setText("Очки: 0");
@@ -42,11 +48,11 @@ void MainWindow::resetGame() {
 
     QRandomGenerator *random = QRandomGenerator::global();
     for (int i = 0; i < 9; ++i) {
-        int value = random->bounded(-50, 51);
 
         QByteArray encryptedData;
-        encryptQByteArray(QByteArray::number(value), encryptedData, hash_key);
-        cardValues.append(encryptedData);
+        encryptQByteArray(QByteArray::number(random->bounded(-50, 51)), encryptedData, hash_key);
+
+        cardValues.append(QPair<QByteArray, bool>(encryptedData, false));
 
         QPushButton *cardButton = findChild<QPushButton*>(QString("card%1").arg(i + 1));
         if (cardButton) {
@@ -77,18 +83,19 @@ void MainWindow::onCardClicked() {
 
     if (index != -1 && cardsRevealed < 3) {
 
-        decryptQByteArray(cardValues[index], decryptedBytes, hash_key);
+        decryptQByteArray(cardValues[index].first, decryptedBytes, hash_key);
 
         int value = decryptedBytes.toInt();
         clickedButton->setText(QString::number(value));
         clickedButton->setEnabled(false);
+        cardValues[index].second = true;
         currentScore += value;
         ++cardsRevealed;
 
         ui->scoreLabel->setText(QString("Очки: %1").arg(currentScore));
 
         if (cardsRevealed == 3) {
-            QMessageBox::information(this, "Результат", QString("Вы набрали %1 очков").arg(currentScore));
+            QMessageBox::information(this, "Результат", QString("Набрано очков: %1").arg(currentScore));
             resetGame();
         }
     }
@@ -96,6 +103,109 @@ void MainWindow::onCardClicked() {
 
 void MainWindow::onResetButtonClicked() {
     resetGame();
+}
+
+void MainWindow::loadGame() {
+    cardValues.clear();
+
+    QFile jsonFile(jsonPath);
+    if (!jsonFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Не удалось открыть файл для чтения";
+        return;
+    }
+
+    QByteArray jsonData;
+    QByteArray hash = QCryptographicHash::hash(QByteArray::number(correctPinCode), QCryptographicHash::Sha256);
+    unsigned char hash_key[32] = {0};
+    memcpy(hash_key, hash.data(), 32);
+
+    decryptQByteArray(jsonFile.readAll(), jsonData, hash_key);
+    jsonFile.close();
+
+    QJsonParseError error;
+    QJsonObject jsonObject = QJsonDocument::fromJson(jsonData, &error).object();
+
+    currentScore = jsonObject["currentScore"].toInt();
+    cardsRevealed = jsonObject["cardsRevealed"].toInt();
+    QJsonArray jsonArray = jsonObject["cardValues"].toArray();
+
+    if(jsonArray.size() == 9) {
+        for (int index = 0; index < jsonArray.size(); index++) {
+            const QJsonObject &obj = jsonArray[index].toObject();
+
+            QByteArray hash = QCryptographicHash::hash(QByteArray::number(correctPinCode), QCryptographicHash::Sha256);
+            unsigned char hash_key[32] = {0};
+            memcpy(hash_key, hash.data(), 32);
+
+            QByteArray decryptedBytes;
+            QByteArray byteArrayValue = QByteArray::fromBase64(obj["value"].toString().toUtf8());
+
+            decryptQByteArray(byteArrayValue, decryptedBytes, hash_key);
+
+            bool boolValue = obj["checked"].toBool();
+            cardValues.append(QPair<QByteArray, bool>(byteArrayValue, boolValue));
+
+            if (boolValue) {
+                int card_value = decryptedBytes.toInt();
+
+                QPushButton *cardButton = findChild<QPushButton*>(QString("card%1").arg(index + 1));
+                cardButton->setText(QString::number(card_value));
+                cardButton->setEnabled(false);
+
+                ui->scoreLabel->setText(QString("Очки: %1").arg(currentScore));
+            }
+        }
+
+    } else {
+        resetGame();
+    }
+
+
+}
+
+void MainWindow::saveJson() {
+    QFile jsonFile(jsonPath);
+
+    jsonFile.resize(0);
+
+    QJsonArray jsonArray;
+
+    for (const auto &pair : cardValues) {
+        QJsonObject jsonObject;
+        jsonObject["value"] = QString::fromUtf8(pair.first.toBase64());
+        jsonObject["checked"] = pair.second;
+        jsonArray.append(jsonObject);
+    }
+
+    QJsonObject jsonMainObject;
+    jsonMainObject["cardValues"] = jsonArray;
+    jsonMainObject["currentScore"] = currentScore;
+    jsonMainObject["cardsRevealed"] = cardsRevealed;
+
+    QJsonDocument jsonDocument(jsonMainObject);
+
+    QByteArray hash = QCryptographicHash::hash(QByteArray::number(correctPinCode), QCryptographicHash::Sha256);
+    unsigned char hash_key[32] = {0};
+    memcpy(hash_key, hash.data(), 32);
+
+    QByteArray encryptedData;
+
+    encryptQByteArray(jsonDocument.toJson(), encryptedData, hash_key);
+
+
+    if (jsonFile.open(QIODevice::WriteOnly)) {
+        jsonFile.write(encryptedData);
+        jsonFile.close();
+        qDebug() << "JSON данные сохранены в файл output.json";
+    } else {
+        qWarning() << "Не удалось открыть файл для записи";
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    saveJson();
+
+    QMainWindow::closeEvent(event);
 }
 
 int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key)
@@ -157,6 +267,7 @@ int MainWindow::decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& 
 int MainWindow::encryptQByteArray(const QByteArray &plainBytes, QByteArray &encryptedBytes, unsigned char *key)
 {
     qDebug() << "Encrypting";
+
     QByteArray iv_hex("00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f");
     QByteArray iv_ba = QByteArray::fromHex(iv_hex);
     unsigned char iv[16] = {0};

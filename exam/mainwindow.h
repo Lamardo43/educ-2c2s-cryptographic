@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMap>
 #include <QVector>
+#include <QFile>
 #include "ui_mainwindow.h"
 
 QT_BEGIN_NAMESPACE
@@ -22,13 +24,20 @@ private slots:
     void onResetButtonClicked();
 
 private:
-    void resetGame();
+    QString jsonPath = "D:/Education/Education4/enc/exam/JSON/last_game.json";
+
 
     Ui::MainWindow *ui;
     int correctPinCode = 1234;
-    QVector<QByteArray> cardValues;
+    QVector<QPair<QByteArray, bool>> cardValues;
     int currentScore;
     int cardsRevealed;
+
+    void resetGame();
+    void closeEvent(QCloseEvent *event);
+    void saveJson();
+    void loadGame();
+
     int decryptQByteArray(const QByteArray& encryptedBytes, QByteArray& decryptedBytes, unsigned char *key);
     int encryptQByteArray(const QByteArray &plainBytes, QByteArray &encryptedBytes, unsigned char *key);
 };
