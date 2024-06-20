@@ -196,7 +196,7 @@ void MainWindow::saveJson() {
     if (jsonFile.open(QIODevice::WriteOnly)) {
         jsonFile.write(encryptedData);
         jsonFile.close();
-        qDebug() << "JSON данные сохранены в файл output.json";
+        qDebug() << "JSON данные сохранены в json-файл";
     } else {
         qWarning() << "Не удалось открыть файл для записи";
     }
